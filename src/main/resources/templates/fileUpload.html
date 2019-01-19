@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="/fileResolve" id="domeform" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" value="选择文件">
+        <input type="submit" value="表单提交">
+        <input type="button" value="ajax提交" id="ajaxsub">
+        <input type="button" value="formdata提交" id="ormdatasub">
+    </form>
+</body>
+<script src="../static/js/jquery-3.3.1.js"></script>
+<script>
+    // 需要引入 js
+    // $(function(){
+    //     $("#ajaxsub").click(function(){
+    //         $("#domeform").ajaxSubmit({
+    //             url: "/fileUpload",
+    //             type: "POST",
+    //             dataType: "json",
+    //             success: function (res) {
+    //                 //处理成功后的业务逻辑
+    //             }
+    //         })
+    //     })
+    // })
+
+
+    /**
+     * 使用FormData
+     */
+    $("#ormdatasub").click(function(){
+        var formdata = new FormData($("#domeform")[0]);
+        alert("确定上传吗？")
+        $.ajax({
+            url: "/fileResolve",
+            type: "POST",
+            data:formdata,
+            dataType: "json",
+            processData: false,  // 告诉jQuery不要去处理发送的数据
+            contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+            success: function (res) {
+            }
+        })
+    })
+</script>
+</html>
