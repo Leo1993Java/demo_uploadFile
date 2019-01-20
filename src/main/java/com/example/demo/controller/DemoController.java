@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.example.demo.dao.javaBean.UserInfo;
+import com.example.demo.util.FileUtil;
 import com.example.demo.util.ObjectUtil;
 import com.example.demo.util.StrUtil;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,14 @@ import java.util.Map;
 
 @Controller
 public class DemoController {
+
+    /**
+     * 文件类型 初始化
+     * 如果增加了多功能，则可以在此处进行初始化
+     */
+    public Map<String,String> ContentType = new HashMap<String,String>(){{
+        put("text/plain",".txt");
+    }};
 
     @RequestMapping("index")
     public String index(){
@@ -90,16 +99,29 @@ public class DemoController {
     }
 
     /**
-     *
+     * 解析文件
+     * @param request
+     * @param file
+     * @return
+     * @throws IOException
      */
     @RequestMapping(value = "fileResolve",method = RequestMethod.POST)
     @ResponseBody
     public String fileResolve(HttpServletRequest request, MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
         long size = file.getSize();
-        System.out.println("即将解析文件：" + filename +",文件大小：" + size);
+        String chSize = FileUtil.getPrintSize(size);
+        String contentType = file.getContentType();
+        if(size <= 0) {
+            return "文件必须要有内容，否则不进行解析！";
+        }
+        if(contentType==null || !ContentType.containsKey(contentType) || "".equals(contentType)){
+            return "该文件类型目前，目前能支持的文件类型：" + ContentType.keySet().toString() + ",后缀为：" + ContentType.values().toString();
+        }
+        System.out.println("即将解析文件：" + filename +"文件类型：" + contentType + ",文件大小：" + chSize);
         byte[] buffers = file.getBytes();
-        System.out.println(StrUtil.toHexString(buffers));
+        System.out.println(StrUtil.toHexString(buffers));//字节码
+        System.out.println(new String(buffers));//字节码对于的中文
         InputStream in = file.getInputStream();
         List<String> list = StrUtil.readTxtFileIntoStringArrList(in);
         System.out.println(list.toString());
